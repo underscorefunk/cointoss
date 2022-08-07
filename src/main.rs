@@ -40,10 +40,12 @@ impl Machine {
         }
     }
 
+    /// State accessor so that we can keep state borrow free
     pub fn state(&self) -> State {
         self.state.clone()
     }
 
+    /// Context accessor so that we can keep context borrow free
     pub fn context(&self) -> Context {
         self.context.clone()
     }
