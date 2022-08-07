@@ -26,6 +26,14 @@ struct Context {
     wins: i8,
 }
 
+impl Default for Context {
+    fn default() -> Self {
+        Self {
+            wins: 0
+        }
+    }
+}
+
 #[derive(Debug, Clone)]
 struct Machine {
     context: Context,
@@ -36,7 +44,7 @@ impl Machine {
     pub fn new() -> Self {
         Self {
             state: State::Idle,
-            context: Context { wins: 0 }
+            context: Context::default()
         }
     }
 
