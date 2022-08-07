@@ -19,6 +19,7 @@ enum State {
 
 #[derive(Debug, Clone)]
 enum Event {
+    _Init,
     Toss,
 }
 
@@ -50,6 +51,10 @@ impl Machine {
         }
     }
 
+    pub fn start(&mut self) {
+        self.send(Event::_Init)
+    }
+
     /// State accessor so that we can keep state borrow free
     pub fn state(&self) -> State {
         self.state.clone()
@@ -62,6 +67,18 @@ impl Machine {
 
     pub fn send(&mut self, event: Event) {
         match self.state {
+
+            State::_Uninitialized => match event {
+                Event::_Init => {
+
+                    // On Enter Actions? Set score?
+
+                    // Transiton State
+                    self.state = State::Idle;
+
+                },
+                _ => {}
+            },
 
             State::Idle => match event {
                 Event::Toss => {
@@ -83,9 +100,9 @@ impl Machine {
                     self.state = State::Idle;
 
                 },
-                _ => ()
+                _ => {}
             },
-            _ => ()
+            _ => {}
         }
     }
 
@@ -95,6 +112,9 @@ impl Machine {
 fn main() {
     println!("Coin Toss Game");
     let mut game = Machine::new();
+    println!("{:?}", game);
+
+    game.start();
     println!("{:?}", game);
 
     game.send( Event::Toss );
