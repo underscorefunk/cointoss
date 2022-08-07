@@ -1,127 +1,69 @@
-// SCHEMA
-// ------
-// Enumerate the game states which contain their state capabilities
+// @todo - Remove mutable
+// @todo - Event queue
+// @todo - Internal private events, external public events
+// @todo - Add initialization events
+// @todo - Event data (use a closure to wrap and apply it)
+// @todo - Consider adding _uninitialized state
 
-#[derive(Debug)]
-enum GameState {
-    Idle(GameIdle),
-    TossingCoin(GameTossingCoin),
-    Win(GameWin),
+#[derive(Debug, Clone)]
+enum State {
+
+    Idle,
+    TossingCoin,
+    Win,
 }
 
-// CONTEXT
-// -------
-// Define the shared data that is unique to an instance of a machine
+#[derive(Debug, Clone)]
+enum Event {
+    Toss,
+}
 
-#[derive(Debug)]
-struct GameContext {
+#[derive(Debug, Clone)]
+struct Context {
     wins: i8,
 }
 
-// STATE
-// -----
-// A game state struct holds the capabilities of a given state in context
-
-#[derive(Debug)]
-struct GameIdle {
-    context: GameContext,
+#[derive(Debug, Clone)]
+struct Machine {
+    context: Context,
+    state: State,
 }
 
-// STATE BEHAVIOURS
-// ----------------
-// Lifecycle hooks/actions, behaviours, and possible transition methods.
-// How you would interact with the state.
-
-impl GameIdle {
-    // STATE INITIALIZATION
-    // --------------------
-    // Always takes context for its "state". The struct is the state.
-    pub fn new(context: GameContext) -> GameState {
-
-        // LIFECYCLE: On Enter
-        // -------------------
-        // On enter, we can do things here to change which state is returned
-        // or if things happen to the context as part of state initialization
-        GameState::Idle(
-            Self { context }
-        )
-    }
-
-    // TRANSITION
-    // ----------
-    // Returns a new state. Actions (changes to context) also return game states of the same state.
-    // They are like self transitions.
-
-    // Note public access
-    pub fn toss(self) -> GameState {
-
-        // To toss a coin we enter the tossing state which does some things on enter
-        // This means that the 'toss' method may actually return a different GameState
-        // because of it's on enter processing
-        GameTossingCoin::new(self.context)
-    }
-}
-
-#[derive(Debug)]
-struct GameTossingCoin {
-    context: GameContext,
-}
-
-
-impl GameTossingCoin {
-    pub fn new(context: GameContext) -> GameState {
-
-        // ON ENTRY
-        // -- ACTION
-        let context = Self::toss(context);
-
-        // -- TRANSITION
-        Self::done(context)
-
-        // THERE IS NO DEFAULT/STANDARD RETURN BECAUSE OF THE done action
-        // GameState::TossingCoin(
-        //     Self { context }
-        // )
-    }
-
-    // Note private access
-    fn toss(context: GameContext) -> GameContext{
-        GameContext{
-            wins: context.wins + 1
+impl Machine {
+    pub fn new() -> Self {
+        Self {
+            state: State::Idle,
+            context: Context { wins: 0 }
         }
     }
 
-    // Note private access
-    fn done(context: GameContext) -> GameState {
-        match context.wins {
-            3 => GameWin::new( context ),
-            _ => GameIdle::new( context )
+    pub fn state(&self) -> State {
+        self.state.clone()
+    }
+
+    pub fn context(&self) -> Context {
+        self.context.clone()
+    }
+
+    pub fn send(&mut self, event: Event) {
+        match self.state {
+            State::Idle => match event {
+                Event::Toss => {
+                    self.state = State::TossingCoin
+                },
+                _ => ()
+            },
+            _ => ()
         }
     }
+
 }
 
-#[derive(Debug)]
-struct GameWin {
-    context: GameContext,
-}
-
-impl GameWin {
-    pub fn new(context: GameContext) -> GameState {
-        GameState::Win(
-            Self { context }
-        )
-    }
-}
 
 fn main() {
     println!("Coin Toss Game");
-
-    // Create a new machine
-    let mut game_machine = GameIdle::new(GameContext { wins: 0 });
-
-    while let GameState::Idle(game) = game_machine {
-        game_machine = game.toss();
-    }
-
-    println!("{:?}", game_machine);
+    let mut game = Machine::new();
+    println!("{:?}", game);
+    game.send( Event::Toss );
+    println!("{:?}", game);
 }
