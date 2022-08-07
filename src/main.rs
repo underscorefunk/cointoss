@@ -11,6 +11,7 @@
 
 #[derive(Debug, Clone, PartialEq)]
 enum State {
+    _Uninitialized,
     Idle,
     TossingCoin,
     Win,
@@ -41,9 +42,10 @@ struct Machine {
 }
 
 impl Machine {
+    /// Initialize a machine to it's first state
     pub fn new() -> Self {
         Self {
-            state: State::Idle,
+            state: State::_Uninitialized,
             context: Context::default()
         }
     }
