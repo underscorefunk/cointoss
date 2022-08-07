@@ -43,6 +43,7 @@ struct Machine {
 }
 
 impl Machine {
+
     /// Initialize a machine to it's first state
     pub fn new() -> Self {
         Self {
@@ -51,6 +52,7 @@ impl Machine {
         }
     }
 
+    /// Require a machine to be started so that it can be used
     pub fn start(&mut self) {
         self.send(Event::_Init)
     }
@@ -65,17 +67,30 @@ impl Machine {
         self.context.clone()
     }
 
+    /// Send a valid event/typed event to the machine for processing
     pub fn send(&mut self, event: Event) {
         match self.state {
 
+            /// Algorithm
+            /// ---------
+            ///  Match the current state to narrow down behaviour
+            ///  Match an event to process the event
+            ///        Dispatch Event
+            ///        Transition ->
+            ///            check guards,
+            ///            change state,
+            ///            do on enter
+            ///
+            /// Big unknown, how do we exit early from a processing queue
+            /// if we transition away from a given state as part of an action?
+            ///
+            /// I think we need to codify how each action type is handled and
+            /// make a mini algo for it.
+
             State::_Uninitialized => match event {
                 Event::_Init => {
-
-                    // On Enter Actions? Set score?
-
                     // Transiton State
                     self.state = State::Idle;
-
                 },
                 _ => {}
             },
