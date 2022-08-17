@@ -1,13 +1,39 @@
-#[derive(Debug, PartialEq)]
+#[derive(Debug, Copy, Clone, PartialEq)]
+#[non_exhaustive]
 enum State {
     Idle,
+    TossingCoin,
+}
+
+#[derive(Debug, Copy, Clone, PartialEq)]
+#[non_exhaustive]
+enum Event {
+    Toss,
 }
 
 #[derive(Debug)]
-struct Machine {}
+struct Machine {
+    state: State,
+}
+
+impl Default for Machine {
+    fn default() -> Self {
+        Self { state: State::Idle }
+    }
+}
+
 impl Machine {
     pub fn state(&self) -> State {
-        State::Idle
+        self.state
+    }
+    pub fn receive(&mut self, e: Event) {
+        match self.state {
+            State::Idle => match e {
+                Event::Toss => self.state = State::TossingCoin,
+                _ => {}
+            },
+            _ => {}
+        }
     }
 }
 
@@ -17,7 +43,14 @@ mod test {
 
     #[test]
     fn initial_machine() {
-        let coin_toss = Machine {};
-        assert_eq!(coin_toss.state(), State::Idle);
+        let m = Machine::default();
+        assert_eq!(m.state(), State::Idle);
+    }
+
+    #[test]
+    fn first_toss() {
+        let mut m = Machine::default();
+        m.receive(Event::Toss);
+        assert_eq!(m.state(), State::TossingCoin);
     }
 }
