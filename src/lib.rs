@@ -17,11 +17,23 @@ enum Event {
 #[derive(Debug)]
 struct Machine {
     state: State,
+    coin_toss: Invocation,
+}
+
+#[derive(Debug)]
+struct Invocation {
+    //@todo Create ability for an invocation to accept a
+    //      once closure to put in a thread. It should have
+    //      a maybe to see if the invocation is running or not.
+    //
 }
 
 impl Default for Machine {
     fn default() -> Self {
-        Self { state: State::Idle }
+        Self {
+            state: State::Idle,
+            coin_toss: Invocation {},
+        }
     }
 }
 
@@ -30,14 +42,40 @@ impl Machine {
         self.state
     }
 
+    fn set_state(&mut self, new_state: State) {
+        self.state = new_state;
+    }
+
     pub fn receive(&mut self, e: Event) {
         match self.state {
             State::Idle => match e {
-                Event::Toss => self.state = State::TossingCoin,
+                Event::Toss => self.transition(State::TossingCoin, e),
                 _ => {}
             },
             _ => {}
         }
+    }
+
+    fn transition(&mut self, to: State, e: Event) {
+        let from = self.state;
+
+        if Machine::is_transition_to(&from, &to, &State::TossingCoin) {
+            // invoke the coin tosser
+        }
+
+        if Machine::is_transition_away(&State::TossingCoin, &to) {
+            // clean up the coin tosser
+        }
+
+        self.set_state(to);
+    }
+
+    fn is_transition_to(from: &State, to: &State, target: &State) -> bool {
+        Machine::is_transition_away(from, to) && to == target
+    }
+
+    fn is_transition_away(from: &State, to: &State) -> bool {
+        from != to
     }
 }
 
