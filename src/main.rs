@@ -30,9 +30,7 @@ struct Context {
 
 impl Default for Context {
     fn default() -> Self {
-        Self {
-            wins: 0
-        }
+        Self { wins: 0 }
     }
 }
 
@@ -43,12 +41,11 @@ struct Machine {
 }
 
 impl Machine {
-
     /// Initialize a machine to it's first state
     pub fn new() -> Self {
         Self {
             state: State::_Uninitialized,
-            context: Context::default()
+            context: Context::default(),
         }
     }
 
@@ -70,7 +67,6 @@ impl Machine {
     /// Send a valid event/typed event to the machine for processing
     pub fn send(&mut self, event: Event) {
         match self.state {
-
             /// Algorithm
             /// ---------
             ///  Match the current state to narrow down behaviour
@@ -86,18 +82,16 @@ impl Machine {
             ///
             /// I think we need to codify how each action type is handled and
             /// make a mini algo for it.
-
             State::_Uninitialized => match event {
                 Event::_Init => {
                     // Transiton State
                     self.state = State::Idle;
-                },
+                }
                 _ => {}
             },
 
             State::Idle => match event {
                 Event::Toss => {
-
                     // Transition state
                     self.state = State::TossingCoin;
 
@@ -113,16 +107,13 @@ impl Machine {
 
                     // Forced transition
                     self.state = State::Idle;
-
-                },
+                }
                 _ => {}
             },
             _ => {}
         }
     }
-
 }
-
 
 fn main() {
     println!("Coin Toss Game");
@@ -132,10 +123,10 @@ fn main() {
     game.start();
     println!("{:?}", game);
 
-    game.send( Event::Toss );
-    game.send( Event::Toss );
-    game.send( Event::Toss );
-    game.send( Event::Toss );
+    game.send(Event::Toss);
+    game.send(Event::Toss);
+    game.send(Event::Toss);
+    game.send(Event::Toss);
 
     println!("{:?}", game);
 }
