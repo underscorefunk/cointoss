@@ -57,4 +57,20 @@ mod test {
         m.receive(Event::Toss);
         assert_eq!(m.state(), State::TossingCoin);
     }
+
+    #[test]
+    fn invoke_toss() {
+        //@todo figure out how to test the invocation
+        //      or what the best way is to kick it off.
+        //      Possibly part of "on enter" then envoke?
+        //      Allow coinToss to accept a waiting period
+        //      so that we can test the error.
+        //      Create a channel, spawn a thread,
+    }
+
+    #[test]
+    fn last_event() {
+        // @todo Confirm that the last event is stored, even if
+        //       the event was not a supported event. In thst case
+    }
 }
