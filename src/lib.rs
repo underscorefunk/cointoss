@@ -1,3 +1,6 @@
+/// TDD Goodness is unloacked via
+/// cargo watch -x test
+
 #[derive(Debug, Copy, Clone, PartialEq)]
 #[non_exhaustive]
 enum State {
@@ -26,6 +29,7 @@ impl Machine {
     pub fn state(&self) -> State {
         self.state
     }
+
     pub fn receive(&mut self, e: Event) {
         match self.state {
             State::Idle => match e {
