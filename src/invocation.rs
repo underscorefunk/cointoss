@@ -21,28 +21,24 @@
 ///     State => Terminated
 ///
 
-enum InvocationResult {
-    Done,
-    Error
-}
+pub struct Invocation {}
 
-struct Invocation {
-
-}
+use std::marker::Send;
+use std::sync::mpsc::{Receiver, SendError, Sender};
+use std::thread;
+use std::thread::JoinHandle;
 
 impl Invocation {
-    pub fn new(
+    pub fn spawn<Task, Response, Error>(task: Task, messages: Sender<Result<Response, Error>>) -> ()
+    where
+        Task: FnOnce() -> Result<Response, Error> + Send + 'static,
+        Response: Send + 'static,
+        Error: Send + 'static,
+    {
+        let t = thread::spawn(move || messages.send(task()));
 
-    )
-
-    /// The invocation can receive messages
-    /// from the outside word
-    pub fn receive() {
-
+        // Join will cause this thread to wait for processes to finish
+        // this makes invocations blocking and we need to fix that!
+        t.join();
     }
-
-    pub fn start() {
-
-    }
-
 }

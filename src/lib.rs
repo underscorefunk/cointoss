@@ -1,3 +1,5 @@
+pub mod invocation;
+
 /// TDD Goodness is unloacked via
 /// cargo watch -x test
 
