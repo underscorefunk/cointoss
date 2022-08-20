@@ -1,7 +1,7 @@
 Coin Toss
 =========
 
-## Threading requirements
+## Async requirements
 Invocations in machines require us to spawn threads, creating actors and using message passing 
 as communication. Machines that invoke other machines will have their threads blocked while the 
 child (invoked) machines process their invocations.
@@ -44,4 +44,10 @@ the channel.
 
 Integrate with YEW
 
-This is the wrong solution and should be done with async
+This is the wrong solution and should be done with async.
+Async yields processing to other components awaited components to see if they're done
+
+Every await triggers checking if other yielded things are done. 
+Yield flows back up the control flow
+
+Awaiting has to cascade down because a non awaited future does nothing and they can be dropped
