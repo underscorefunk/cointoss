@@ -23,10 +23,12 @@
 
 pub struct Invocation {}
 
-use std::marker::Send;
-use std::sync::mpsc::{Receiver, SendError, Sender};
-use std::thread;
-use std::thread::JoinHandle;
+use std::{
+    marker::Send,
+    sync::mpsc::{Receiver, SendError, Sender},
+    thread,
+    thread::JoinHandle,
+};
 
 impl Invocation {
     pub fn spawn<Task, Response, Error>(task: Task, messages: Sender<Result<Response, Error>>) -> ()
