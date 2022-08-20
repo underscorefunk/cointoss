@@ -1,43 +1,47 @@
 Coin Toss
 =========
 
-The objective of this repo is to explore state machine patterns by looking at concrete machines.
+## Threading requirements
+Invocations in machines require us to spawn threads, creating actors and using message passing 
+as communication. Machines that invoke other machines will have their threads blocked while the 
+child (invoked) machines process their invocations.
 
-## Invocations
-- Invocations are spawned when they enter their invoked state.
-- Invocations are cleaned up when they leave their invoked state.
-- Invocations require a channel to send their events(data) back to their parent
+Machine
+1. enter state
+2. spawn invocation
+   1. thread paused while processing
+   2. thread joined when complete
+3. end of enter state
 
-Accept any event out of possible events
-Exterior is an IO boundary
-Observe Context
-Observe Current State
-Receive Messages
-Need event queue/inbox even for unsupported events
+This is problematic because we need the machine to continue to accept messages.
 
-Machine ( state, context )
+The solution is to spawn each machine on a thread which is always looking for messages and 
+is responding to messages. These messages follow the query command pattern with queries 
+returning values but not changing the machine and commands changing the machine but not 
+yielding a response.
+    
+    query
+        state
+        context
+        last_action
+    command
+        action
 
-	All of the following get (context, state)
+The above messsges are THE ONLY way we can interact with the machine!
 
-	Guards - get context and events
+TODO: Add support for reaching into the graph to send messages down or walk up to retrieve 
+the graph of nested machines
 
-	Action (non-blocking) 	 - Sync is blocking
-						 - Async gets forgotten
+Machine
+    State (only inner mutability)
+    Context (only inner mutability)
 
-	Invocation (blocking)  	- Calling an Async function 	(action)
-			 			- Calling a sync function 		(action)
-			 			- Spawning a Machine
-			 			- A provided callback (websocket events, etc)
+Reactive ui works as a function of pulling updates (data + address) off the event queue
+The updated state/context event queue is populated by pushing updates to the updated s/c queue.
 
-Action something taking context + event and performing a side effect
+Machine struct has a cache state (reference to it) and a send method that pushes things done 
+the channel. 
 
-Action: 				(context, event) => side effect
-Assignment (Action):
+Integrate with YEW
 
-
-Enum events
-with InvalidEvent(string)
-
-Event goes to event queue
-Attempts to process it
-
+This is the wrong solution and should be done with async
